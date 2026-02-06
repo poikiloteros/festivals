@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Festivals and Society in Ptolemaic and Roman Egypt</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+
+    <style>
+        :root {
+            --bg-top: #FFCBA4; 
+            --bg-bottom: #FDFBF7;
+            --text-primary: #1c1917;
+            --text-secondary: #44403c;
+            
+            --card-terracotta: #A96248;
+            --card-sand: #E3D5CA;
+            --card-teal: #4A6C6F;
+            --card-charcoal: #292524;
+        }
+
+        body {
+            font-family: 'Manrope', sans-serif;
+            color: var(--text-primary);
+            margin: 0;
+            overflow-x: hidden;
+            background: linear-gradient(180deg, var(--bg-top) 0%, #faeadd 40%, var(--bg-bottom) 100%);
+        }
+
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        h1, h2, h3, h4, .serif-font {
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        /* Nav & Interactives */
+        .nav-link {
+            position: relative;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -4px;
+            left: 0;
+            background-color: currentColor;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Bento Grid Specifics */
+        .bento-card {
+            border-radius: 8px;
+            padding: 1.75rem;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            overflow: hidden;
+            height: 100%; /* Ensure full height filling */
+        }
+        .bento-card:hover { transform: translateY(-4px); }
+
+        .card-feature { background-color: var(--card-charcoal); color: #FDFBF7; }
+        .card-blog { background-color: var(--card-sand); color: var(--text-primary); }
+        .card-info { background-color: var(--card-terracotta); color: #FDFBF7; }
+        .card-meta { background-color: rgba(255,255,255,0.6); border: 1px solid rgba(169, 98, 72, 0.1); }
+
+        /* Bes Image Masking */
+        .bes-bg {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            width: 60%;
+            height: 100%;
+            background-image: url('https://festivals-egypt.org/images/Dancing_Bes_alongside_seated_of_musicians_MET_DP238932_1.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15;
+            mix-blend-mode: luminosity;
+            mask-image: linear-gradient(to left, black 0%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        /* Logo Masking for Footer */
+        .logo-masked {
+            filter: grayscale(100%) sepia(100%) hue-rotate(320deg) brightness(0.4);
+            mix-blend-mode: multiply;
+        }
+        
+        /* Reveal Animation Utility Class */
+        .word-reveal-wrapper { overflow: hidden; display: inline-block; vertical-align: top; }
+        .word-reveal { display: inline-block; transform: translateY(100%); opacity: 0; }
+
+        .logo-path {
+            fill: none;
+            stroke: #1c1917;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="antialiased selection:bg-orange-200 selection:text-black">
+
+    <div class="noise-overlay"></div>
+
+    <!-- Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-between items-center opacity-0 transition-all duration-500" id="main-nav">
+        <div class="w-8 h-auto cursor-pointer mix-blend-multiply opacity-50 hover:opacity-100 transition-opacity" onclick="gsap.to(window, {duration: 1, scrollTo: '#hero'})">
+            <svg viewBox="0 0 150 300" xmlns="http://www.w3.org/2000/svg">
+               <path d="M50 250 C 10 250, 10 200, 50 200 C 80 200, 80 150, 80 120 L 80 80 C 80 40, 120 40, 120 80 C 120 100, 100 100, 90 80" stroke="#1a1a1a" stroke-width="20" fill="none" stroke-linecap="round"/>
+               <path d="M 60 120 L 100 125" stroke="#1a1a1a" stroke-width="15" fill="none" stroke-linecap="round" />
+            </svg>
+        </div>
+        
+        <nav class="hidden md:flex gap-10 text-gray-800 font-medium text-xs tracking-widest">
+            <a onclick="gsap.to(window, {duration: 1, scrollTo: '#hero'})" class="nav-link">Home</a>
+            <a onclick="gsap.to(window, {duration: 1, scrollTo: '#project-section'})" class="nav-link">Project</a>
+            <a onclick="gsap.to(window, {duration: 1, scrollTo: '#blog-section'})" class="nav-link">Blog</a>
+            <a class="nav-link">Team</a>
+        </nav>
+        
+        <div class="md:hidden text-2xl cursor-pointer">&#9776;</div>
+    </header>
+
+    <!-- SECTION 1: HERO -->
+    <section id="hero" class="h-screen w-full flex flex-col justify-center items-center text-center px-4 relative">
+        
+        <!-- Animated Logo -->
+        <div class="mb-10 w-24 md:w-32 h-auto relative" id="hero-logo">
+            <svg viewBox="0 0 160 320" xmlns="http://www.w3.org/2000/svg" class="w-full h-full drop-shadow-lg">
+                <path class="logo-path" d="M60 270 C 20 270, 10 220, 50 210 C 90 200, 85 140, 85 110 C 85 60, 140 30, 140 80 C 140 110, 110 110, 100 80" />
+                <path class="logo-path" d="M 65 140 Q 100 155 120 140" /> 
+            </svg>
+        </div>
+
+        <div class="max-w-4xl z-10">
+            <h1 class="serif-font text-5xl md:text-7xl lg:text-8xl leading-tight text-gray-900 tracking-tight opacity-0 transform translate-y-8" id="title-main">
+                Festivals and society
+            </h1>
+            <h2 class="serif-font italic text-3xl md:text-4xl lg:text-5xl text-gray-700 mt-4 font-light opacity-0 transform translate-y-8" id="title-sub">
+                in Ptolemaic and Roman Egypt
+            </h2>
+        </div>
+
+        <!-- HERO FOOTER -->
+        <div class="absolute bottom-8 w-full px-8">
+            <!-- Logos anchored Left -->
+            <div class="absolute left-8 bottom-0 flex gap-6 opacity-0" id="hero-logos">
+                <!-- University of Vienna (Updated) -->
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/2880px_University_of_Vienna_Logo.png" 
+                     class="h-12 w-auto logo-masked object-contain" 
+                     alt="University of Vienna" 
+                     referrerpolicy="no-referrer">
+                
+                <!-- FWF -->
+                <img src="https://cdn.brandfetch.io/idD89tPeew/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B" 
+                     class="h-12 w-auto logo-masked object-contain rounded-sm" 
+                     alt="FWF"
+                     style="mix-blend-mode: darken; filter: contrast(1.2) brightness(1.1) grayscale(1);"> 
+            </div>
+
+            <!-- Arrow Centered -->
+            <div class="w-full flex justify-center">
+                <div class="cursor-pointer animate-bounce opacity-0 p-4 hover:text-orange-600 transition-colors" 
+                     id="scroll-indicator"
+                     onclick="gsap.to(window, {duration: 1, scrollTo: '#project-section', ease: 'power2.inOut'})">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION 2: PROJECT (Bento Grid) -->
+    <section id="project-section" class="min-h-screen w-full px-6 py-16 md:px-12 md:py-24 flex flex-col lg:flex-row gap-12 relative">
+        
+        <!-- Left: Text -->
+        <div class="lg:w-1/3 flex flex-col justify-start sticky top-20 self-start">
+            <!-- Adjusted header size and margins to be less intrusive -->
+            <h3 class="serif-font text-3xl mb-4 text-gray-900">About the project</h3>
+            <div class="text-lg md:text-xl leading-relaxed text-gray-700 font-light" id="reveal-text-container">
+                <!-- Text populated via JS for animation -->
+            </div>
+            
+            <div class="mt-8 opacity-0" id="left-col-buttons">
+                <button class="px-6 py-2 border border-gray-800 rounded-full hover:bg-gray-800 hover:text-white transition-colors duration-300 uppercase text-xs tracking-widest">
+                    Learn More
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Bento Grid (Strict Rectangle: 3 cols x 2 rows) -->
+        <div class="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="bento-grid">
+            
+            <!-- ROW 1 START -->
+            <!-- 1. Featured Object (Takes 2 cols) -->
+            <div class="bento-card card-feature md:col-span-2 min-h-[250px] flex flex-col justify-between group cursor-pointer border border-transparent hover:border-orange-900/30">
+                <!-- Bes Background Image -->
+                <div class="bes-bg"></div>
+                <div class="relative z-10">
+                    <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-2 block">Featured Object</span>
+                    <h4 class="serif-font text-2xl md:text-3xl italic">P.Oxy. 1234: The Festival Letter</h4>
+                </div>
+                <div class="mt-4 relative z-10">
+                    <p class="text-gray-300 text-sm leading-relaxed max-w-sm">
+                        A business letter from the Zenon archive reports workers absent due to a religious festival.
+                    </p>
+                    <div class="mt-3 flex items-center gap-2 text-sm text-orange-200">
+                        <span>Explore Object</span> &rarr;
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Project News (Takes 1 col, standard height) -->
+            <div class="bento-card card-blog flex flex-col cursor-pointer hover:shadow-lg" onclick="gsap.to(window, {duration: 1, scrollTo: '#blog-section'})">
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500 mb-2 block">Project News</span>
+                <div class="w-full h-24 bg-gray-300 rounded mb-2 overflow-hidden relative">
+                    <img src="https://images.unsplash.com/photo-1544890589-94a5002a2434?q=80&w=2787" class="object-cover w-full h-full hover:scale-105 transition-transform duration-700" alt="Egypt Landscape">
+                </div>
+                <h4 class="serif-font text-xl mb-1 leading-tight">Time Off for the Gods</h4>
+                <div class="border-t border-gray-400/20 pt-2 mt-auto flex justify-between items-center text-[10px] text-gray-500 uppercase tracking-wider">
+                    <span>Read Post</span>
+                    <span>&darr;</span>
+                </div>
+            </div>
+            <!-- ROW 1 END -->
+
+            <!-- ROW 2 START -->
+            <!-- 3. Funding (1 col) -->
+            <div class="bento-card card-meta flex flex-col justify-center items-center text-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/FWF_Logo.svg/1200px-FWF_Logo.svg.png" alt="FWF" class="h-5 mb-3 hover:scale-110 transition-transform">
+                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Project P 37192</p>
+            </div>
+
+            <!-- 4. PI Card (1 col) -->
+            <div class="bento-card card-info flex flex-col justify-center">
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-orange-200 mb-1 block">Principal Investigator</span>
+                <h4 class="serif-font text-2xl text-white">Dr. Elena Chepel</h4>
+                <p class="text-orange-100 text-xs mt-1">University of Vienna</p>
+                <a href="https://ucrisportal.univie.ac.at/en/persons/elena-chepel/" target="_blank" class="inline-block mt-3 text-[10px] border-b border-orange-200/50 pb-0.5 text-orange-200 hover:text-white transition-colors w-max">View Full Profile</a>
+            </div>
+            
+            <!-- 5. Database Link (1 col) -->
+            <div class="bento-card bg-[#d97706] text-white flex flex-col justify-center items-center cursor-pointer hover:bg-[#b45309] transition-colors group">
+                 <h4 class="serif-font text-xl italic text-center group-hover:-translate-y-1 transition-transform">Search Database</h4>
+                 <span class="mt-2 text-xl group-hover:translate-x-1 transition-transform">&rarr;</span>
+            </div>
+            <!-- ROW 2 END -->
+
+        </div>
+    </section>
+
+    <!-- SECTION 3: BLOG -->
+    <section id="blog-section" class="min-h-screen w-full px-6 py-20 md:px-24 bg-[#FDFBF7] relative z-20">
+        <div class="border-t border-gray-300 mb-16 pt-4 flex justify-between items-end">
+            <h3 class="serif-font text-5xl text-gray-900">Research Blog</h3>
+            <span class="text-xs uppercase tracking-widest text-gray-500 hidden md:block">Recent Contributions</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <!-- Post 1 -->
+            <article class="group cursor-pointer">
+                <div class="overflow-hidden rounded-lg mb-6 aspect-[4/3]">
+                    <img src="https://images.unsplash.com/photo-1565060169332-9dc47be7308d?q=80&w=2000" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 saturate-50 group-hover:saturate-100" alt="Lecture Hall">
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-500 mb-3 uppercase tracking-wider">
+                    <span>02.04.2025</span>
+                    <span class="w-8 h-[1px] bg-gray-400"></span>
+                    <span>Conferences</span>
+                </div>
+                <h4 class="serif-font text-3xl mb-3 group-hover:text-[#A96248] transition-colors">Time Off for the Gods: Festival Mobility in Graeco-Roman Egypt</h4>
+                <p class="text-gray-600 font-light leading-relaxed">
+                    On March 20, I presented my research on festival mobility at the University of Reading...
+                </p>
+                <a href="#" class="inline-block mt-4 text-xs border-b border-gray-900 pb-1 hover:text-[#A96248] hover:border-[#A96248] transition-colors">Read Full Post</a>
+            </article>
+
+            <!-- Post 2 -->
+            <article class="group cursor-pointer mt-12 md:mt-0">
+                <div class="overflow-hidden rounded-lg mb-6 aspect-[4/3]">
+                    <img src="https://images.unsplash.com/photo-1560130958-f7c756920155?q=80&w=2000" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 saturate-50 group-hover:saturate-100" alt="Abydos Temple">
+                </div>
+                <div class="flex items-center gap-4 text-xs text-gray-500 mb-3 uppercase tracking-wider">
+                    <span>25.02.2025</span>
+                    <span class="w-8 h-[1px] bg-gray-400"></span>
+                    <span>Fieldwork</span>
+                </div>
+                <h4 class="serif-font text-3xl mb-3 group-hover:text-[#A96248] transition-colors">To Abydos and Back Again: Graffiti, Festivals, and Travel</h4>
+                <p class="text-gray-600 font-light leading-relaxed">
+                    Three weeks ago, I visited Abydos for the first time — a place that has captivated travellers for millennia...
+                </p>
+                <a href="#" class="inline-block mt-4 text-xs border-b border-gray-900 pb-1 hover:text-[#A96248] hover:border-[#A96248] transition-colors">Read Full Post</a>
+            </article>
+        </div>
+    </section>
+
+    <footer class="w-full py-12 text-center text-gray-400 text-xs tracking-widest bg-[#1c1917]">
+        <p>&copy; 2024-2028 Festivals and Society in Ptolemaic and Roman Egypt.</p>
+        <p class="mt-2 opacity-50">Department of Ancient History, Papyrology and Epigraphy.</p>
+    </footer>
+
+    <!-- INTERACTION LOGIC -->
+    <script>
+        document.addEventListener("DOMContentLoaded", (event) => {
+            gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+            // --- 1. HERO ---
+            const tl = gsap.timeline();
+            tl.to(".logo-path", { strokeDashoffset: 0, duration: 2.5, ease: "power2.inOut" })
+              .to("#title-main", { opacity: 1, y: 0, duration: 1.2, ease: "power3.out" }, "-=1.0")
+              .to("#title-sub", { opacity: 1, y: 0, duration: 1, ease: "power3.out" }, "-=0.8")
+              .to("#scroll-indicator", { opacity: 1, duration: 0.5 })
+              .to("#main-nav", { opacity: 1, duration: 1 }, "-=0.5")
+              .to("#hero-logos", { opacity: 0.8, duration: 1 }, "-=0.5");
+
+            // --- 2. TEXT REVEAL ---
+            const descText = "Egypt during the Hellenistic and Roman periods presents an extraordinary potential to explore the intersection of macro-historical forces with everyday social and economic life. Festivals emerge as pivotal indicators of these societal transformations.";
+            
+            const words = descText.split(" ");
+            const container = document.getElementById("reveal-text-container");
+            container.innerHTML = words.map(word => `<span class="word-reveal-wrapper"><span class="word-reveal">${word}&nbsp;</span></span>`).join("");
+
+            gsap.to(".word-reveal", {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                stagger: 0.02,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: "#reveal-text-container",
+                    start: "top 80%"
+                },
+                onComplete: () => {
+                    gsap.to("#left-col-buttons", { opacity: 1, duration: 1 });
+                }
+            });
+
+            // --- 3. BENTO GRID ---
+            gsap.from(".bento-card", {
+                scrollTrigger: {
+                    trigger: "#bento-grid",
+                    start: "top 85%"
+                },
+                y: 30,
+                opacity: 0,
+                duration: 0.6,
+                stagger: 0.1, 
+                ease: "power2.out"
+            });
+
+            // --- 4. BLOG ---
+            gsap.from("article", {
+                scrollTrigger: {
+                    trigger: "#blog-section",
+                    start: "top 70%"
+                },
+                y: 40,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power3.out"
+            });
+            
+            // --- HEADER SCROLL EFFECT ---
+            ScrollTrigger.create({
+                start: "top -50",
+                end: 99999,
+                onEnter: () => {
+                    document.getElementById("main-nav").classList.add("bg-white/80", "backdrop-blur-md", "shadow-sm");
+                },
+                onLeaveBack: () => {
+                    document.getElementById("main-nav").classList.remove("bg-white/80", "backdrop-blur-md", "shadow-sm");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
