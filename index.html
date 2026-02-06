@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="original">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400;1,600&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,600;1,6..96,400;1,6..96,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,600&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,23 +20,72 @@
 
     <style>
         :root {
-            --bg-top: #FFCBA4; 
-            --bg-bottom: #FDFBF7;
+            --transition-speed: 0.5s;
+        }
+
+        /* --- THEME: ORIGINAL (Atmospheric) --- */
+        [data-theme="original"] {
+            --font-heading: 'Cormorant Garamond', serif;
+            --font-body: 'Manrope', sans-serif;
+            
+            --bg-body: linear-gradient(180deg, #FFCBA4 0%, #faeadd 40%, #FDFBF7 100%);
+            --bg-section-alt: #FDFBF7;
+            
             --text-primary: #1c1917;
             --text-secondary: #44403c;
+            --accent-color: #A96248; 
             
-            --card-terracotta: #A96248;
-            --card-sand: #E3D5CA;
-            --card-teal: #4A6C6F;
-            --card-charcoal: #292524;
+            --card-feature: #292524;
+            --card-blog: #E3D5CA;
+            --card-info: #A96248;
+            --card-meta: rgba(255,255,255,0.6);
+            --card-meta-border: rgba(169, 98, 72, 0.1);
+            
+            --nav-text: #1f2937;
+            --logo-stroke: #1c1917;
+            --mobile-menu-bg: #FDFBF7;
+        }
+
+        /* --- THEME: STRICT (Focus/Edgy) --- */
+        [data-theme="strict"] {
+            --font-heading: 'Bodoni Moda', serif; 
+            --font-body: 'Manrope', sans-serif;
+            
+            --bg-body: #FAFAFA; 
+            --bg-section-alt: #F4F4F5;
+            
+            --text-primary: #09090b; 
+            --text-secondary: #27272a;
+            --accent-color: #7c2d12; 
+            
+            --card-feature: #18181b; 
+            --card-blog: #e4e4e7; 
+            --card-info: #52525b; 
+            --card-meta: #ffffff;
+            --card-meta-border: #d4d4d8;
+            
+            --nav-text: #000000;
+            --logo-stroke: #000000;
+            --mobile-menu-bg: #FAFAFA;
         }
 
         body {
-            font-family: 'Manrope', sans-serif;
+            font-family: var(--font-body);
             color: var(--text-primary);
             margin: 0;
             overflow-x: hidden;
-            background: linear-gradient(180deg, var(--bg-top) 0%, #faeadd 40%, var(--bg-bottom) 100%);
+            background: var(--bg-body);
+            transition: background 0.8s ease, color 0.5s ease;
+        }
+
+        h1, h2, h3, h4, .serif-font {
+            font-family: var(--font-heading);
+            font-weight: 400; 
+            transition: font-family 0.5s ease, letter-spacing 0.5s ease;
+        }
+        
+        [data-theme="strict"] h1, [data-theme="strict"] h2 {
+            letter-spacing: -0.03em;
         }
 
         .noise-overlay {
@@ -51,17 +100,14 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        h1, h2, h3, h4, .serif-font {
-            font-family: 'Cormorant Garamond', serif;
-        }
-
         /* Nav & Interactives */
         .nav-link {
             position: relative;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.1em;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
             cursor: pointer;
+            color: var(--nav-text);
         }
         .nav-link::after {
             content: '';
@@ -77,23 +123,84 @@
             width: 100%;
         }
 
+        .theme-toggle {
+            cursor: pointer;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 4px 12px;
+            border: 1px solid currentColor;
+            border-radius: 99px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-toggle:hover {
+            background-color: var(--text-primary);
+            color: var(--bg-section-alt);
+        }
+
+        /* Mobile Menu */
+        #mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: var(--mobile-menu-bg);
+            z-index: 40; /* Below nav header (z-50) */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            transform: translateY(-100%);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.8s ease;
+        }
+        #mobile-menu.open {
+            transform: translateY(0);
+        }
+
         /* Bento Grid Specifics */
         .bento-card {
-            border-radius: 8px;
+            border-radius: 4px;
             padding: 1.75rem;
-            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
             position: relative;
             overflow: hidden;
-            height: 100%; /* Ensure full height filling */
+            height: 100%; 
+            display: flex; 
+            flex-direction: column;
+            border: 1px solid transparent; 
+            opacity: 1; 
         }
-        .bento-card:hover { transform: translateY(-4px); }
+        
+        [data-theme="strict"] .bento-card {
+            border-radius: 2px;
+            box-shadow: none;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+        
+        .bento-card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+            z-index: 10;
+        }
+        
+        .card-feature { background-color: var(--card-feature); color: #FDFBF7; }
+        .card-blog { background-color: var(--card-blog); color: var(--text-primary); }
+        .card-info { 
+            background-color: var(--card-info); 
+            color: #FDFBF7;
+            transition: background-color 0.4s ease, transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .card-meta { background-color: var(--card-meta); border: 1px solid var(--card-meta-border); }
 
-        .card-feature { background-color: var(--card-charcoal); color: #FDFBF7; }
-        .card-blog { background-color: var(--card-sand); color: var(--text-primary); }
-        .card-info { background-color: var(--card-terracotta); color: #FDFBF7; }
-        .card-meta { background-color: rgba(255,255,255,0.6); border: 1px solid rgba(169, 98, 72, 0.1); }
+        .card-info:hover {
+            filter: brightness(0.9);
+        }
 
-        /* Bes Image Masking */
         .bes-bg {
             position: absolute;
             right: -20px;
@@ -110,53 +217,111 @@
             pointer-events: none;
         }
 
-        /* Logo Masking for Footer */
-        .logo-masked {
-            filter: grayscale(100%) sepia(100%) hue-rotate(320deg) brightness(0.4);
+        .archaeo-mask {
+            filter: sepia(0.6) contrast(1.1) brightness(0.95) saturate(0.8);
+            transition: filter 0.5s ease, transform 0.7s ease;
             mix-blend-mode: multiply;
         }
         
-        /* Reveal Animation Utility Class */
-        .word-reveal-wrapper { overflow: hidden; display: inline-block; vertical-align: top; }
-        .word-reveal { display: inline-block; transform: translateY(100%); opacity: 0; }
+        [data-theme="strict"] .archaeo-mask {
+            filter: grayscale(1) contrast(1.1) brightness(1.05); 
+            mix-blend-mode: normal;
+        }
+        
+        .group:hover .archaeo-mask {
+            filter: sepia(0) contrast(1) brightness(1) saturate(1);
+            mix-blend-mode: normal;
+            transform: scale(1.03);
+        }
+
+        .img-container-bg {
+            background-color: var(--card-blog);
+        }
 
         .logo-path {
             fill: none;
-            stroke: #1c1917;
+            stroke: var(--logo-stroke);
             stroke-width: 8;
             stroke-linecap: round;
             stroke-dasharray: 1000;
             stroke-dashoffset: 1000;
+            transition: stroke 0.5s ease;
         }
 
-        html { scroll-behavior: smooth; }
+        /* Text Reveal Animation Utility Classes */
+        .word-reveal-wrapper { 
+            overflow: hidden; 
+            display: inline-block; 
+            vertical-align: top; 
+        }
+        .word-reveal { 
+            display: inline-block; 
+            transform: translateY(100%); 
+            opacity: 0; 
+        }
+
+        html { scroll-behavior: auto; }
+        
+        [data-theme="strict"] .text-gray-700 { color: #3f3f46; }
+        [data-theme="strict"] .text-gray-300 { color: #a1a1aa; }
+        [data-theme="strict"] .text-orange-200 { color: #fdba74; }
     </style>
 </head>
-<body class="antialiased selection:bg-orange-200 selection:text-black">
+<body class="antialiased selection:bg-gray-800 selection:text-white">
 
     <div class="noise-overlay"></div>
 
     <!-- Navigation -->
     <header class="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-between items-center opacity-0 transition-all duration-500" id="main-nav">
-        <div class="w-8 h-auto cursor-pointer mix-blend-multiply opacity-50 hover:opacity-100 transition-opacity" onclick="gsap.to(window, {duration: 1, scrollTo: '#hero'})">
+        <!-- Logo -->
+        <div class="w-8 h-auto cursor-pointer mix-blend-multiply opacity-50 hover:opacity-100 transition-opacity z-50" onclick="closeMenu(); gsap.to(window, {duration: 0.8, scrollTo: '#hero', ease: 'power4.out'})">
             <svg viewBox="0 0 150 300" xmlns="http://www.w3.org/2000/svg">
-               <path d="M50 250 C 10 250, 10 200, 50 200 C 80 200, 80 150, 80 120 L 80 80 C 80 40, 120 40, 120 80 C 120 100, 100 100, 90 80" stroke="#1a1a1a" stroke-width="20" fill="none" stroke-linecap="round"/>
-               <path d="M 60 120 L 100 125" stroke="#1a1a1a" stroke-width="15" fill="none" stroke-linecap="round" />
+               <path d="M50 250 C 10 250, 10 200, 50 200 C 80 200, 80 150, 80 120 L 80 80 C 80 40, 120 40, 120 80 C 120 100, 100 100, 90 80" stroke="currentColor" stroke-width="20" fill="none" stroke-linecap="round"/>
+               <path d="M 60 120 L 100 125" stroke="currentColor" stroke-width="15" fill="none" stroke-linecap="round" />
             </svg>
         </div>
         
-        <nav class="hidden md:flex gap-10 text-gray-800 font-medium text-xs tracking-widest">
-            <a onclick="gsap.to(window, {duration: 1, scrollTo: '#hero'})" class="nav-link">Home</a>
-            <a onclick="gsap.to(window, {duration: 1, scrollTo: '#project-section'})" class="nav-link">Project</a>
-            <a onclick="gsap.to(window, {duration: 1, scrollTo: '#blog-section'})" class="nav-link">Blog</a>
+        <!-- Desktop Nav -->
+        <nav class="hidden md:flex gap-8 font-medium">
+            <a onclick="gsap.to(window, {duration: 0.8, scrollTo: '#hero', ease: 'power4.out'})" class="nav-link">Home</a>
+            <a onclick="gsap.to(window, {duration: 0.8, scrollTo: '#project-section', ease: 'power4.out'})" class="nav-link">Project</a>
+            <a onclick="gsap.to(window, {duration: 0.8, scrollTo: '#blog-section', ease: 'power4.out'})" class="nav-link">Blog</a>
             <a class="nav-link">Team</a>
         </nav>
-        
-        <div class="md:hidden text-2xl cursor-pointer">&#9776;</div>
+
+        <!-- Right: Theme Toggle & Mobile Burger -->
+        <div class="flex items-center gap-4 z-50">
+            <!-- Desktop Toggle -->
+            <div class="hidden md:flex theme-toggle" id="theme-btn-desktop" onclick="toggleTheme()">
+                <span class="theme-label">Atmosphere</span>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+                </svg>
+            </div>
+            <!-- Mobile Hamburger -->
+            <div class="md:hidden text-2xl cursor-pointer ml-4" onclick="toggleMenu()">&#9776;</div>
+        </div>
     </header>
 
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu">
+        <a onclick="closeMenu(); gsap.to(window, {duration: 0.8, scrollTo: '#hero', ease: 'power4.out'})" class="text-3xl serif-font cursor-pointer hover:text-orange-700 transition-colors">Home</a>
+        <a onclick="closeMenu(); gsap.to(window, {duration: 0.8, scrollTo: '#project-section', ease: 'power4.out'})" class="text-3xl serif-font cursor-pointer hover:text-orange-700 transition-colors">Project</a>
+        <a onclick="closeMenu(); gsap.to(window, {duration: 0.8, scrollTo: '#blog-section', ease: 'power4.out'})" class="text-3xl serif-font cursor-pointer hover:text-orange-700 transition-colors">Blog</a>
+        <a class="text-3xl serif-font cursor-pointer hover:text-orange-700 transition-colors">Team</a>
+        
+        <div class="mt-8 theme-toggle text-xl px-6 py-2" id="theme-btn-mobile" onclick="toggleTheme()">
+             <span class="theme-label">Atmosphere</span>
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="5"></circle>
+                <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+            </svg>
+        </div>
+    </div>
+
     <!-- SECTION 1: HERO -->
-    <section id="hero" class="h-screen w-full flex flex-col justify-center items-center text-center px-4 relative">
+    <section id="hero" class="h-screen min-h-[600px] w-full flex flex-col justify-center items-center text-center px-4 relative">
         
         <!-- Animated Logo -->
         <div class="mb-10 w-24 md:w-32 h-auto relative" id="hero-logo">
@@ -178,16 +343,14 @@
         <!-- HERO FOOTER -->
         <div class="absolute bottom-8 w-full px-8">
             <!-- Logos anchored Left -->
-            <div class="absolute left-8 bottom-0 flex gap-6 opacity-0" id="hero-logos">
-                <!-- University of Vienna (Updated) -->
+            <div class="absolute left-4 md:left-8 bottom-0 flex gap-4 md:gap-6 opacity-0" id="hero-logos">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/2880px_University_of_Vienna_Logo.png" 
-                     class="h-12 w-auto logo-masked object-contain" 
+                     class="h-8 md:h-12 w-auto logo-masked object-contain" 
                      alt="University of Vienna" 
                      referrerpolicy="no-referrer">
                 
-                <!-- FWF -->
                 <img src="https://cdn.brandfetch.io/idD89tPeew/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B" 
-                     class="h-12 w-auto logo-masked object-contain rounded-sm" 
+                     class="h-8 md:h-12 w-auto logo-masked object-contain rounded-sm" 
                      alt="FWF"
                      style="mix-blend-mode: darken; filter: contrast(1.2) brightness(1.1) grayscale(1);"> 
             </div>
@@ -196,7 +359,7 @@
             <div class="w-full flex justify-center">
                 <div class="cursor-pointer animate-bounce opacity-0 p-4 hover:text-orange-600 transition-colors" 
                      id="scroll-indicator"
-                     onclick="gsap.to(window, {duration: 1, scrollTo: '#project-section', ease: 'power2.inOut'})">
+                     onclick="gsap.to(window, {duration: 0.8, scrollTo: '#project-section', ease: 'power4.out'})">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                         <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
                     </svg>
@@ -206,11 +369,12 @@
     </section>
 
     <!-- SECTION 2: PROJECT (Bento Grid) -->
-    <section id="project-section" class="min-h-screen w-full px-6 py-16 md:px-12 md:py-24 flex flex-col lg:flex-row gap-12 relative">
+    <!-- Mobile: Padding top reduced (pt-24), Column behavior fixed -->
+    <section id="project-section" class="min-h-screen w-full px-6 pt-24 md:pt-32 pb-24 md:px-12 md:pb-32 flex flex-col lg:flex-row gap-12 relative">
         
         <!-- Left: Text -->
-        <div class="lg:w-1/3 flex flex-col justify-start sticky top-20 self-start">
-            <!-- Adjusted header size and margins to be less intrusive -->
+        <!-- Mobile: Static positioning (flows naturally), Full width, Bottom margin added -->
+        <div class="w-full lg:w-[30%] flex flex-col justify-start static lg:sticky lg:top-40 self-start shrink-0 mb-8 lg:mb-0">
             <h3 class="serif-font text-3xl mb-4 text-gray-900">About the project</h3>
             <div class="text-lg md:text-xl leading-relaxed text-gray-700 font-light" id="reveal-text-container">
                 <!-- Text populated via JS for animation -->
@@ -223,13 +387,13 @@
             </div>
         </div>
 
-        <!-- Right: Bento Grid (Strict Rectangle: 3 cols x 2 rows) -->
-        <div class="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="bento-grid">
+        <!-- Right: Bento Grid -->
+        <!-- Mobile: auto-rows reduced to 16rem for better fit on phone screens -->
+        <div class="w-full lg:flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 auto-rows-[16rem] md:auto-rows-[18rem]" id="bento-grid">
             
             <!-- ROW 1 START -->
-            <!-- 1. Featured Object (Takes 2 cols) -->
-            <div class="bento-card card-feature md:col-span-2 min-h-[250px] flex flex-col justify-between group cursor-pointer border border-transparent hover:border-orange-900/30">
-                <!-- Bes Background Image -->
+            <!-- 1. Featured Object -->
+            <div class="bento-card card-feature md:col-span-2 flex flex-col justify-between group cursor-pointer hover:border-orange-900/30">
                 <div class="bes-bg"></div>
                 <div class="relative z-10">
                     <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-2 block">Featured Object</span>
@@ -239,42 +403,54 @@
                     <p class="text-gray-300 text-sm leading-relaxed max-w-sm">
                         A business letter from the Zenon archive reports workers absent due to a religious festival.
                     </p>
-                    <div class="mt-3 flex items-center gap-2 text-sm text-orange-200">
+                    <div class="mt-3 flex items-center gap-2 text-sm text-orange-200 group-hover:translate-x-2 transition-transform">
                         <span>Explore Object</span> &rarr;
                     </div>
                 </div>
             </div>
 
-            <!-- 2. Project News (Takes 1 col, standard height) -->
-            <div class="bento-card card-blog flex flex-col cursor-pointer hover:shadow-lg" onclick="gsap.to(window, {duration: 1, scrollTo: '#blog-section'})">
+            <!-- 2. Project News -->
+            <div class="bento-card card-blog flex flex-col cursor-pointer group" onclick="gsap.to(window, {duration: 0.8, scrollTo: '#blog-section', ease: 'power4.out'})">
                 <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-500 mb-2 block">Project News</span>
-                <div class="w-full h-24 bg-gray-300 rounded mb-2 overflow-hidden relative">
-                    <img src="https://images.unsplash.com/photo-1544890589-94a5002a2434?q=80&w=2787" class="object-cover w-full h-full hover:scale-105 transition-transform duration-700" alt="Egypt Landscape">
+                <div class="w-full flex-grow bg-gray-300 rounded mb-2 overflow-hidden relative min-h-0">
+                    <img src="https://festivals-egypt.org/images/Dancing_Bes_alongside_seated_of_musicians_MET_DP238932_1.jpg" 
+                         class="object-cover object-top w-full h-full group-hover:scale-105 transition-transform duration-700" 
+                         alt="Bes Dancing">
                 </div>
-                <h4 class="serif-font text-xl mb-1 leading-tight">Time Off for the Gods</h4>
-                <div class="border-t border-gray-400/20 pt-2 mt-auto flex justify-between items-center text-[10px] text-gray-500 uppercase tracking-wider">
+                <h4 class="serif-font text-xl mb-1 leading-tight mt-auto group-hover:text-orange-900 transition-colors">Time Off for the Gods</h4>
+                <div class="border-t border-gray-400/20 pt-2 mt-2 flex justify-between items-center text-[10px] text-gray-500 uppercase tracking-wider">
                     <span>Read Post</span>
-                    <span>&darr;</span>
+                    <span class="group-hover:translate-y-1 transition-transform">&darr;</span>
                 </div>
             </div>
             <!-- ROW 1 END -->
 
             <!-- ROW 2 START -->
-            <!-- 3. Funding (1 col) -->
-            <div class="bento-card card-meta flex flex-col justify-center items-center text-center">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/FWF_Logo.svg/1200px-FWF_Logo.svg.png" alt="FWF" class="h-5 mb-3 hover:scale-110 transition-transform">
-                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Project P 37192</p>
-            </div>
+            <!-- 3. Funding -->
+            <a href="https://ucrisportal.univie.ac.at/en/projects/feste-und-gesellschaft-im-ptolem%C3%A4ischen-und-r%C3%B6mischen-%C3%A4gypten/" target="_blank" class="block h-full">
+                <div class="bento-card card-meta flex flex-col justify-center items-center text-center group h-full">
+                    <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-4 block">Funding</span>
+                    <img src="https://cdn.brandfetch.io/idD89tPeew/w/400/h/400/theme/dark/icon.jpeg?c=1dxbfHSJFAPEGdCLU4o5B" 
+                         alt="FWF Funding" 
+                         class="h-10 mb-4 group-hover:scale-110 transition-transform object-contain mix-blend-multiply opacity-80 filter grayscale brightness-125 contrast-125">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest">Project P 37192</p>
+                </div>
+            </a>
 
-            <!-- 4. PI Card (1 col) -->
-            <div class="bento-card card-info flex flex-col justify-center">
-                <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-orange-200 mb-1 block">Principal Investigator</span>
-                <h4 class="serif-font text-2xl text-white">Dr. Elena Chepel</h4>
-                <p class="text-orange-100 text-xs mt-1">University of Vienna</p>
-                <a href="https://ucrisportal.univie.ac.at/en/persons/elena-chepel/" target="_blank" class="inline-block mt-3 text-[10px] border-b border-orange-200/50 pb-0.5 text-orange-200 hover:text-white transition-colors w-max">View Full Profile</a>
-            </div>
+            <!-- 4. PI Card -->
+            <a href="https://altegeschichte.univie.ac.at/en/about-us/members/staff/chepel/" target="_blank" class="block h-full">
+                <div class="bento-card card-info flex flex-col justify-center group h-full">
+                    <span class="text-[10px] font-bold tracking-[0.2em] uppercase text-orange-200 mb-1 block">Principal Investigator</span>
+                    <h4 class="serif-font text-2xl text-white">Dr. Elena Chepel</h4>
+                    <p class="text-orange-100 text-xs mt-1">University of Vienna</p>
+                    <div class="inline-flex items-center gap-2 mt-3 text-[10px] text-orange-200 group-hover:text-white transition-colors">
+                        <span class="border-b border-orange-200/50 pb-0.5">View Full Profile</span>
+                        <span class="transform group-hover:translate-x-1 transition-transform">&rarr;</span>
+                    </div>
+                </div>
+            </a>
             
-            <!-- 5. Database Link (1 col) -->
+            <!-- 5. Database Link -->
             <div class="bento-card bg-[#d97706] text-white flex flex-col justify-center items-center cursor-pointer hover:bg-[#b45309] transition-colors group">
                  <h4 class="serif-font text-xl italic text-center group-hover:-translate-y-1 transition-transform">Search Database</h4>
                  <span class="mt-2 text-xl group-hover:translate-x-1 transition-transform">&rarr;</span>
@@ -285,7 +461,7 @@
     </section>
 
     <!-- SECTION 3: BLOG -->
-    <section id="blog-section" class="min-h-screen w-full px-6 py-20 md:px-24 bg-[#FDFBF7] relative z-20">
+    <section id="blog-section" class="min-h-screen w-full px-6 py-20 md:px-24 relative z-20" style="background-color: var(--bg-section-alt); transition: background-color 0.8s ease;">
         <div class="border-t border-gray-300 mb-16 pt-4 flex justify-between items-end">
             <h3 class="serif-font text-5xl text-gray-900">Research Blog</h3>
             <span class="text-xs uppercase tracking-widest text-gray-500 hidden md:block">Recent Contributions</span>
@@ -294,8 +470,10 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
             <!-- Post 1 -->
             <article class="group cursor-pointer">
-                <div class="overflow-hidden rounded-lg mb-6 aspect-[4/3]">
-                    <img src="https://images.unsplash.com/photo-1565060169332-9dc47be7308d?q=80&w=2000" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 saturate-50 group-hover:saturate-100" alt="Lecture Hall">
+                <div class="overflow-hidden rounded-lg mb-6 aspect-[4/3] img-container-bg relative">
+                    <img src="https://festivals-egypt.org/storage/images/r5hY0SJVzA4VLsMJI9lrbpLZvFr7HjwKahjt87So.png" 
+                         class="object-cover w-full h-full archaeo-mask" 
+                         alt="Time Off for the Gods">
                 </div>
                 <div class="flex items-center gap-4 text-xs text-gray-500 mb-3 uppercase tracking-wider">
                     <span>02.04.2025</span>
@@ -311,8 +489,10 @@
 
             <!-- Post 2 -->
             <article class="group cursor-pointer mt-12 md:mt-0">
-                <div class="overflow-hidden rounded-lg mb-6 aspect-[4/3]">
-                    <img src="https://images.unsplash.com/photo-1560130958-f7c756920155?q=80&w=2000" class="object-cover w-full h-full group-hover:scale-105 transition-transform duration-700 saturate-50 group-hover:saturate-100" alt="Abydos Temple">
+                <div class="overflow-hidden rounded-lg mb-6 aspect-[4/3] img-container-bg relative">
+                    <img src="https://festivals-egypt.org/storage/images/1r60V77dGBufWjA2oR65TgObzM6yjfR7frvBnCx7.jpg" 
+                         class="object-cover w-full h-full archaeo-mask" 
+                         alt="To Abydos and Back Again">
                 </div>
                 <div class="flex items-center gap-4 text-xs text-gray-500 mb-3 uppercase tracking-wider">
                     <span>25.02.2025</span>
@@ -335,6 +515,26 @@
 
     <!-- INTERACTION LOGIC -->
     <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const labels = document.querySelectorAll(".theme-label");
+            
+            const newTheme = currentTheme === "original" ? "strict" : "original";
+            const newLabel = currentTheme === "original" ? "Focus" : "Atmosphere";
+
+            html.setAttribute("data-theme", newTheme);
+            labels.forEach(label => label.innerText = newLabel);
+        }
+
+        function toggleMenu() {
+            document.getElementById('mobile-menu').classList.toggle('open');
+        }
+
+        function closeMenu() {
+            document.getElementById('mobile-menu').classList.remove('open');
+        }
+
         document.addEventListener("DOMContentLoaded", (event) => {
             gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -362,7 +562,7 @@
                 ease: "power3.out",
                 scrollTrigger: {
                     trigger: "#reveal-text-container",
-                    start: "top 80%"
+                    start: "top 85%"
                 },
                 onComplete: () => {
                     gsap.to("#left-col-buttons", { opacity: 1, duration: 1 });
@@ -370,40 +570,50 @@
             });
 
             // --- 3. BENTO GRID ---
-            gsap.from(".bento-card", {
-                scrollTrigger: {
-                    trigger: "#bento-grid",
-                    start: "top 85%"
-                },
-                y: 30,
-                opacity: 0,
-                duration: 0.6,
-                stagger: 0.1, 
-                ease: "power2.out"
-            });
+            gsap.fromTo(".bento-card", 
+                { y: 50, autoAlpha: 0 }, 
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 0.8,
+                    stagger: 0.15,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: "#bento-grid",
+                        start: "top 80%" 
+                    }
+                }
+            );
 
             // --- 4. BLOG ---
-            gsap.from("article", {
-                scrollTrigger: {
-                    trigger: "#blog-section",
-                    start: "top 70%"
-                },
-                y: 40,
-                opacity: 0,
-                duration: 1,
-                stagger: 0.2,
-                ease: "power3.out"
-            });
+            gsap.fromTo("article", 
+                { y: 50, autoAlpha: 0 },
+                {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 1,
+                    stagger: 0.2,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                        trigger: "#blog-section",
+                        start: "top 75%"
+                    }
+                }
+            );
             
             // --- HEADER SCROLL EFFECT ---
             ScrollTrigger.create({
                 start: "top -50",
                 end: 99999,
                 onEnter: () => {
-                    document.getElementById("main-nav").classList.add("bg-white/80", "backdrop-blur-md", "shadow-sm");
+                    // Update: Check theme to apply correct backdrop color
+                    const isStrict = document.documentElement.getAttribute('data-theme') === 'strict';
+                    const bgClass = isStrict ? "bg-[#FAFAFA]/90" : "bg-white/80";
+                    document.getElementById("main-nav").classList.add(bgClass, "backdrop-blur-md", "shadow-sm");
                 },
                 onLeaveBack: () => {
-                    document.getElementById("main-nav").classList.remove("bg-white/80", "backdrop-blur-md", "shadow-sm");
+                    // Remove all potential bg classes
+                    document.getElementById("main-nav").classList.remove("bg-white/80", "bg-[#FAFAFA]/90", "backdrop-blur-md", "shadow-sm");
                 }
             });
         });
